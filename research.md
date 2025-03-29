@@ -85,14 +85,14 @@ $$
 Let $x = (x_1, x_2, x_3)^\top$. In coordinates, for $i \in \{1,2,3\}$:
 
 $$
- x'_i = x_i + \alpha \Bigl(\sum_{j} c_{ij} x_j - D_{ii} x_i \Bigr).
+x'_i = x_i + \alpha \Bigl(\sum_{j} c_{ij} x_j - D_{ii} x_i \Bigr).
 $$
 
 Expanding explicitly for each node:
 
-- **Node 1** ($x_1'$): $x'_1 = \bigl(1 - \alpha (c_{12} + c_{13})\bigr) x_1 + \alpha c_{12} x_2 + \alpha c_{13} x_3$
-- **Node 2** ($x_2'$): $x'_2 = \bigl(1 - \alpha (c_{21} + c_{23})\bigr) x_2 + \alpha c_{21} x_1 + \alpha c_{23} x_3$
-- **Node 3** ($x_3'$): $x'_3 = \bigl(1 - \alpha (c_{31} + c_{32})\bigr) x_3 + \alpha c_{31} x_1 + \alpha c_{32} x_2$
+- **Node 1**  $x'_1 = \bigl(1 - \alpha (c_{12} + c_{13})\bigr) x_1 + \alpha c_{12} x_2 + \alpha c_{13} x_3$
+- **Node 2**  $x'_2 = \bigl(1 - \alpha (c_{21} + c_{23})\bigr) x_2 + \alpha c_{21} x_1 + \alpha c_{23} x_3$
+- **Node 3**  $x'_3 = \bigl(1 - \alpha (c_{31} + c_{32})\bigr) x_3 + \alpha c_{31} x_1 + \alpha c_{32} x_2$
 
 #### Updated Linear Model
 
@@ -106,6 +106,7 @@ $$
 A portfolio manager can tweak values of $c_{ij}$ in the adjacency matrix $A$ to reflect their views on correlations between features. For example, if $x_1$ and $x_2$ are expected to be more correlated due to a recent economic event, the portfolio manager can increase $c_{12}$ and $c_{21}$ in the adjacency matrix. 
 
 For this example, assume all other correlations to be zero. We have the following adjacency matrix:
+
 $$
 A = \begin{pmatrix}
 0 & 0.8 & 0\\
@@ -133,6 +134,7 @@ This means that we 'blend' the features $x_1$ and $x_2$ together in the predicti
 
 #### Hot-Swapping New Data Streams
 Let's say we have a new data stream $x_4$ that we think is correlated with $x_3$, and will be so temporarily. We can add this new data stream to the model by adding a new node to the graph and updating the adjacency matrix $A$ accordingly.
+
 $$
 A = \begin{pmatrix}
 0 & 0 & 0 & 0\\
@@ -141,6 +143,7 @@ A = \begin{pmatrix}
 0 & 0 & 0.5 & 0
 \end{pmatrix}
 $$
+
 Recall:
 
 $$
