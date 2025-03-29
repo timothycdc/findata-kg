@@ -77,7 +77,7 @@ $$
 Set $B = I + \alpha (A - D)$, thus:
 
 $$
- x' = B x = \bigl(I + \alpha (A - D)\bigr) x
+ x' = B x = \left(I + \alpha (A - D)\right) x
 $$
 
 #### Filtered Features Explicitly
@@ -85,14 +85,14 @@ $$
 Let $x = (x_1, x_2, x_3)^\top$. In coordinates, for $i \in \{1,2,3\}$:
 
 $$
-x'_i = x_i + \alpha \Bigl(\sum_{j} c_{ij} x_j - D_{ii} x_i \Bigr).
+x'_i = x_i + \alpha \left(\sum_{j} c_{ij} x_j - D_{ii} x_i \right).
 $$
 
 Expanding explicitly for each node:
 
-- **Node 1**  $x'_1 = \bigl(1 - \alpha (c_{12} + c_{13})\bigr) x_1 + \alpha c_{12} x_2 + \alpha c_{13} x_3$
-- **Node 2**  $x'_2 = \bigl(1 - \alpha (c_{21} + c_{23})\bigr) x_2 + \alpha c_{21} x_1 + \alpha c_{23} x_3$
-- **Node 3**  $x'_3 = \bigl(1 - \alpha (c_{31} + c_{32})\bigr) x_3 + \alpha c_{31} x_1 + \alpha c_{32} x_2$
+- **Node 1**  $x'_1 = \left(1 - \alpha (c_{12} + c_{13})\right) x_1 + \alpha c_{12} x_2 + \alpha c_{13} x_3$
+- **Node 2**  $x'_2 = \left(1 - \alpha (c_{21} + c_{23})\right) x_2 + \alpha c_{21} x_1 + \alpha c_{23} x_3$
+- **Node 3**  $x'_3 = \left(1 - \alpha (c_{31} + c_{32})\right) x_3 + \alpha c_{31} x_1 + \alpha c_{32} x_2$
 
 #### Updated Linear Model
 
@@ -121,11 +121,11 @@ Then the new features become:
 
 $$
 \begin{aligned}
-x'_1 &= \bigl(1 - 0.8\bigr) x_1 + 0.8 x_2 + 0 x_3\\
+x'_1 &= \left(1 - 0.8\right) x_1 + 0.8 x_2 + 0 x_3\\
      &= 0.2 x_1 + 0.8 x_2\\
-x'_2 &= \bigl(1 - 0.8\bigr) x_2 + 0.8 x_1 + 0 x_3\\
+x'_2 &= \left(1 - 0.8\right) x_2 + 0.8 x_1 + 0 x_3\\
         &= 0.2 x_2 + 0.8 x_1\\
-x'_3 &= \bigl(1 - 0\bigr) x_3 + 0 x_1 + 0 x_2\\
+x'_3 &= \left(1 - 0\right) x_3 + 0 x_1 + 0 x_2\\
         &= x_3
 \end{aligned}
 $$
@@ -148,7 +148,7 @@ $$
 Recall:
 
 $$
-x'_i = x_i + \alpha \Bigl(\sum_{j} c_{ij} x_j - D_{ii} x_i \Bigr).
+x'_i = x_i + \alpha \left(\sum_{j} c_{ij} x_j - D_{ii} x_i \right).
 $$
 
 
@@ -157,7 +157,7 @@ $$
 \begin{aligned}
 x'_1 &= x_1 \\
 x'_2 &= x_2\\
-x'_3 &= \bigl(1 - 0.5\bigr) x_3 + 0 x_1 + 0 x_2 + 0.5 x_4\\
+x'_3 &= \left(1 - 0.5\right) x_3 + 0 x_1 + 0 x_2 + 0.5 x_4\\
         &= 0.5 x_3 + 0.5 x_4\\
 \end{aligned}
 $$
