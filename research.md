@@ -85,7 +85,7 @@ $$
 Let $x = (x_1, x_2, x_3)^\top$. In coordinates, for $i \in \{1,2,3\}$:
 
 $$
-x'_i = x_i + \alpha \left(\sum_{j} c_{ij} x_j - D_{ii} x_i \right).
+x'_i = x_i + \alpha \left(\sum_{j} c_{ij} x_j - D_{ii} x_i \right)
 $$
 
 Expanding explicitly for each node:
@@ -148,11 +148,12 @@ $$
 Recall:
 
 $$
-x'_i = x_i + \alpha \left(\sum_{j} c_{ij} x_j - D_{ii} x_i \right).
+x'_i = x_i + \alpha \left(\sum_{j} c_{ij} x_j - D_{ii} x_i \right)
 $$
 
 
 Then, the new features become:
+
 $$
 \begin{aligned}
 x'_1 &= x_1 \\
