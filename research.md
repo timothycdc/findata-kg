@@ -90,9 +90,9 @@ $$
 
 Expanding explicitly for each node:
 
-- **Node 1**  $x'_1 = \bigl(1 - \alpha (c_{12} + c_{13})\bigr) x_1 + \alpha c_{12} x_2 + \alpha c_{13} x_3$
-- **Node 2**  $x'_2 = \bigl(1 - \alpha (c_{21} + c_{23})\bigr) x_2 + \alpha c_{21} x_1 + \alpha c_{23} x_3$
-- **Node 3**  $x'_3 = \bigl(1 - \alpha (c_{31} + c_{32})\bigr) x_3 + \alpha c_{31} x_1 + \alpha c_{32} x_2$
+- **Node 1**  $ x'_1 = \bigl(1 - \alpha (c_{12} + c_{13})\bigr) x_1 + \alpha c_{12} x_2 + \alpha c_{13} x_3$
+- **Node 2**  $ x'_2 = \bigl(1 - \alpha (c_{21} + c_{23})\bigr) x_2 + \alpha c_{21} x_1 + \alpha c_{23} x_3$
+- **Node 3**  $ x'_3 = \bigl(1 - \alpha (c_{31} + c_{32})\bigr) x_3 + \alpha c_{31} x_1 + \alpha c_{32} x_2$
 
 #### Updated Linear Model
 
@@ -119,14 +119,14 @@ For simplicity let $\alpha = 1$.
 
 Then the new features become:
 $$
-\begin{aligned}
+\begin{align}
 x'_1 &= \bigl(1 - 0.8\bigr) x_1 + 0.8 x_2 + 0 x_3\\
      &= 0.2 x_1 + 0.8 x_2\\
 x'_2 &= \bigl(1 - 0.8\bigr) x_2 + 0.8 x_1 + 0 x_3\\
         &= 0.2 x_2 + 0.8 x_1\\
 x'_3 &= \bigl(1 - 0\bigr) x_3 + 0 x_1 + 0 x_2\\
         &= x_3
-\end{aligned}
+\end{align}
 $$
 
 This means that we 'blend' the features $x_1$ and $x_2$ together in the prediction model. In order for this to work, we need to assume that $x_1, x_2, x_3$ are all normalised to the same scale.
