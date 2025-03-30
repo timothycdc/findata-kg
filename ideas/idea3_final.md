@@ -1,6 +1,6 @@
 # Incorporating Knowledge Graphs for Return Prediction
 
-* Timothy Chung, Anthony Bolton*
+*Timothy Chung, Anthony Bolton*
 
 ### Knowledge Graphs (KGs)
 Knowledge graphs structure information as triples: (Entity, Relationship, Entity) that describe causal or associative relations between entities. In the industry, they are used to integrate qualitative domain knowledge into a more structured form for information retrieval purposes. 
@@ -39,7 +39,7 @@ We use monthly data from 2001-01 to 2023-12 from the following sources:
 - **Unemployment**: US Unemployment rate.
 - **WorkingAgePop**: Working-age population (15–64).
 
-We represent the data as $M \in \mathbb{R}^{M \times T}, $ where $M=8$ is the number of macroeconomic indicators and $T=276$ is the number of time periods.
+We represent the data as $M \in \mathbb{R}^{M \times T}$, where $M=8$ is the number of macroeconomic indicators and $T=276$ is the number of time periods.
 
 #### Asset Returns $R \in \mathbb{R}^{N \times T}$
 
@@ -143,33 +143,33 @@ The main idea is that $r_t^{\text{filtered}}$ incorporates the effects of both a
 
 ## Prediction Model
 
-Let \( r_t \in \mathbb{R}^N \) denote the asset returns at time \( t \), and let \( r_t^{\text{filtered}} \) be the filtered returns obtained via spectral filtering of the combined asset–macro signal \( x_t \). We model the one-step-ahead return as a AR(1) linear autoregression model:
+Let $r_t \in \mathbb{R}^N$ denote the asset returns at time $t$, and let $r_t^{\text{filtered}}$ be the filtered returns obtained via spectral filtering of the combined asset–macro signal $x_t$. We model the one-step-ahead return as a AR(1) linear autoregression model:
 
-\[
+$$
 r_{t+1} = \alpha + \beta\, r_t^{\text{filtered}} + \epsilon_t,
-\]
+$$
 where:
-- \( r_t^{\text{filtered}} \) is the filtered signal,
-- \( \alpha \in \mathbb{R}^N \), \( \beta \in \mathbb{R}^{N \times N} \) are parameters fit via ordinary least squares,
-- \( \epsilon_t \sim \mathcal{N}(0, \Sigma) \) is the residual.
+- $r_t^{\text{filtered}}$ is the filtered signal,
+- $\alpha \in \mathbb{R}^N$, $\beta \in \mathbb{R}^{N \times N}$ are parameters fit via ordinary least squares,
+- $\epsilon_t \sim \mathcal{N}(0, \Sigma)$ is the residual.
 
 ### Online Rolling-Window Forecasting
 
-To evaluate out-of-sample performance, we use a rolling-window scheme with fixed window size \( w \):
+To evaluate out-of-sample performance, we use a rolling-window scheme with fixed window size $ w $:
 
-1. For each \( t \in \{w, \ldots, T-2\} \), fit the filtered data \( \{r_{t-w+1}^{(\text{filtered})}, \ldots, r_{t-1}^{\text{filtered}}\} \) on targets \( \{r_{t-w+2}, \ldots, r_{t}\} \).
-2. Predict \( \hat{r}_{t+1} = \hat{\alpha}_t + \hat{\beta}_t\, r_t^{\text{filtered}} \).
-3. Aggregate forecast errors \( r_{t+1} - \hat{r}_{t+1} \) over all windows to compute:
+1. For each $t \in \{w, \ldots, T-2\}$, fit the filtered data $\{r_{t-w+1}^{(\text{filtered})}, \ldots, r_{t-1}^{\text{filtered}}\}$ on targets $\{r_{t-w+2}, \ldots, r_{t}\}$.
+2. Predict $\hat{r}_{t+1} = \hat{\alpha}_t + \hat{\beta}_t\, r_t^{\text{filtered}}$.
+3. Aggregate forecast errors $r_{t+1} - \hat{r}_{t+1}$ over all windows to compute:
 
 - Mean Squared Error (MSE):  
-\[
+$$
 \text{MSE} = \frac{1}{T-w-1} \sum_{t=w}^{T-2} \left\| r_{t+1} - \hat{r}_{t+1} \right\|_2^2
-\]
+$$
 
 - Directional Accuracy (DA):  
-\[
+$$
 \text{DA} = \frac{1}{N(T-w-1)} \sum_{t=w}^{T-2} \sum_{i=1}^N \mathbf{1}\left\{ \operatorname{sign}(\hat{r}_{t+1,i}) = \operatorname{sign}(r_{t+1,i}) \right\}
-\]
+$$
 
 This process is repeated for both raw and filtered returns to assess the impact of incorporating the PM’s knowledge via the graph.
 
@@ -233,13 +233,14 @@ We encode a sensible set of PM’s beliefs at the **sector level**. For example:
 So all securities in the Energy sector are linked to `IR_10Y_GOV` and `CPI` with weights 0.7 and 0.5 respectively. Similarly, all Materials stocks are linked to `CPI` with weight 0.3, and Industrials to `T10Y3M` with weight 0.6.
 
 This will give a knowledge graph as shown:
+
 ![](kg.png)
 
 The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the adjacency matrix. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices.
 
 ![](adj.png)
 
-The full adjacent matrix is converted into a graph Laplacian, and the GFT is applied to the combined signal vector $ x_t $ to obtain the filtered asset returns \( r_t^{\text{filtered}} \).
+The full adjacent matrix is converted into a graph Laplacian, and the GFT is applied to the combined signal vector $ x_t $ to obtain the filtered asset returns $ r_t^{\text{filtered}} $.
 
 The filtered asset returns have a different covariance structure than the raw returns, as shown here:
 
