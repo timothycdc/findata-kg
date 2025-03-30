@@ -155,7 +155,7 @@ where:
 
 ### Online Rolling-Window Forecasting
 
-To evaluate out-of-sample performance, we use a rolling-window scheme with fixed window size $ w $:
+To evaluate out-of-sample performance, we use a rolling-window scheme with fixed window size $w$:
 
 1. For each $t \in \{w, \ldots, T-2\}$, fit the filtered data $\{r_{t-w+1}^{(\text{filtered})}, \ldots, r_{t-1}^{\text{filtered}}\}$ on targets $\{r_{t-w+2}, \ldots, r_{t}\}$.
 2. Predict $\hat{r}_{t+1} = \hat{\alpha}_t + \hat{\beta}_t\, r_t^{\text{filtered}}$.
@@ -226,9 +226,10 @@ We encode a sensible set of PM’s beliefs at the **sector level**. For example:
 
 | Sector      | Macro Linkages              |
 | ----------- | --------------------------- |
-| Energy      | IR_10Y_GOV: 0.7, CPI: 0.5 |
-| Materials   | CPI: 0.3                    |
-| Industrials | T10Y3M: 0.6                 |
+| Energy      | `IR_10Y_GOV`: 0.7,
+|              | `CPI`: 0.5 |
+| Materials   | `CPI`: 0.3                    |
+| Industrials | `T10Y3M`: 0.6                 |
 
 So all securities in the Energy sector are linked to `IR_10Y_GOV` and `CPI` with weights 0.7 and 0.5 respectively. Similarly, all Materials stocks are linked to `CPI` with weight 0.3, and Industrials to `T10Y3M` with weight 0.6.
 
@@ -236,11 +237,13 @@ This will give a knowledge graph as shown:
 
 ![](kg.png)
 
+A knowledge graph is convenient for a portfolio manager to link causal relationships between asset sectors and macroeconomic indicators. There exist many tools to build and visualise knowledge graphs, such as [Neo4j](https://neo4j.com/) and [WhyHow.AI](https://www.whyhow.ai/).
+
 The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the adjacency matrix. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices.
 
 ![](adj.png)
 
-The full adjacent matrix is converted into a graph Laplacian, and the GFT is applied to the combined signal vector $ x_t $ to obtain the filtered asset returns $ r_t^{\text{filtered}} $.
+The full adjacent matrix is converted into a graph Laplacian, and the GFT is applied to the combined signal vector $x_t$ to obtain the filtered asset returns $r_t^{\text{filtered}}$.
 
 The filtered asset returns have a different covariance structure than the raw returns, as shown here:
 
