@@ -1,5 +1,20 @@
 # Incorporating Knowledge Graphs for Return Prediction
 
+* Timothy Chung, Anthony Bolton*
+
+### Knowledge Graphs (KGs)
+Knowledge graphs structure information as triples: (Entity, Relationship, Entity) that describe causal or associative relations between entities. In the industry, they are used to integrate qualitative domain knowledge into a more structured form for information retrieval purposes. 
+
+### Graph Signal Processing (GSP)
+Graph Signal Processing has historically been used to employ background of signal generating mechanisms to define a graph as a signal domain. This allows for certain analytical techniques which can incorporate signal similarity and spatial locality.
+
+### Challenges in Finance
+Portfolio Managers (PMs), especially those in discretionary or macro buy-side roles often rely on predictive models using conventional, structured time-series data e.g. economic indicators, market prices, yield curves, etc. These models are not relied on solely for trading– at times, portfolio managers may override model decisions especially in times of sudden market volatility. 
+
+In a sudden market event, the correlations between the feature (input) variables will shift greatly. E.g., during a crisis or a panic sell-off, almost all securities will move together downwards. It may be helpful for PMs to have a mechanism to quickly integrate their views on causal relationships without retraining the a predictive model, as it is often the case that these causal changes are often intermittent and do not last long enough to warrant a full retraining of the model.
+
+Modelling covariances between multiple responses is often an uncharted problem in finance, especially when in most modelling cases, the correlations between features are assumed to be constant. [^1].
+
 ## Problem Statement
 
 Let $r_t \in \mathbb{R}^N$ denote the vector of asset returns at time $t$ (for $N$ assets), and $m_t \in \mathbb{R}^M$ denote a vector of macroeconomic indicators (for $M$ indicators). Our goal is to predict next-period asset returns $r_{t+1}$ by incorporating both historical asset data and macroeconomic variables, while allowing the portfolio manager (PM) to inject domain knowledge into the model.
@@ -89,10 +104,12 @@ $$
 \tilde{x}_t = \mathcal{U}^\top x_t
 $$
 
-Next, define a spectral filter function $h(\lambda)$ (for example, an exponential low-pass filter)
+Next, define a spectral filter function $h(\lambda)$. We use an exponential high-pass filter.
 $$
-h(\lambda) = \exp(-\gamma\, \lambda), \quad \gamma > 0
+h(\lambda) = 1- \exp(-\gamma\, \lambda), \quad \gamma > 0
 $$
+
+> We use a high pass filter as we believe high-frequency components in the graph spectrum are more likely to capture idiosyncratic deviations– sharper, more responsive relationships between assets and macro signals. Since the PM’s specified asset–macro linkages are sparse and intentional (updated to react to market events), these relationships may express themselves more distinctly in the higher eigenmodes of the Laplacian. A high-pass filter will emphasise these features, which might be more informative for forecasting compared to the smoother patterns retained by low-pass filtering. We tested the GFT with a high-pass filter and found it to improve the model's predictive performance, while the low-pass filter worsened the results.
 
 Then, the filtered spectral coefficients are:
 $$
@@ -136,11 +153,11 @@ where:
 - \( \alpha \in \mathbb{R}^N \), \( \beta \in \mathbb{R}^{N \times N} \) are parameters fit via ordinary least squares,
 - \( \epsilon_t \sim \mathcal{N}(0, \Sigma) \) is the residual.
 
-### Rolling-Window Forecasting
+### Online Rolling-Window Forecasting
 
 To evaluate out-of-sample performance, we use a rolling-window scheme with fixed window size \( w \):
 
-1. For each \( t \in \{w, \ldots, T-2\} \), fit the model on the window \( \{r_{t-w+1}^{(\text{filtered})}, \ldots, r_t^{\text{filtered}}\} \) and targets \( \{r_{t-w+2}, \ldots, r_{t+1}\} \).
+1. For each \( t \in \{w, \ldots, T-2\} \), fit the filtered data \( \{r_{t-w+1}^{(\text{filtered})}, \ldots, r_{t-1}^{\text{filtered}}\} \) on targets \( \{r_{t-w+2}, \ldots, r_{t}\} \).
 2. Predict \( \hat{r}_{t+1} = \hat{\alpha}_t + \hat{\beta}_t\, r_t^{\text{filtered}} \).
 3. Aggregate forecast errors \( r_{t+1} - \hat{r}_{t+1} \) over all windows to compute:
 
@@ -215,31 +232,34 @@ We encode a sensible set of PM’s beliefs at the **sector level**. For example:
 
 So all securities in the Energy sector are linked to `IR_10Y_GOV` and `CPI` with weights 0.7 and 0.5 respectively. Similarly, all Materials stocks are linked to `CPI` with weight 0.3, and Industrials to `T10Y3M` with weight 0.6.
 
-This is translated into the $B_{am}$ block of the adjacency matrix by assigning weights from the sector to macro variables. Asset-level linking is also possible.
+This will give a knowledge graph as shown:
+![](kg.png)
 
-## 7. Implementation Highlights
+The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the adjacency matrix. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices.
 
-The full model is implemented in Python, with key steps:
+![](adj.png)
 
-- Construct $A_{aa}$ and $A_{mm}$ from sample covariances of asset and macro variables.
-- Build $B_{am}$ based on PM views.
-- Compute Laplacian $\mathcal{L}$ and apply spectral filtering.
-- Train autoregressive models on both original and filtered returns.
-- Evaluate using rolling-window forecast and directional accuracy.
+The full adjacent matrix is converted into a graph Laplacian, and the GFT is applied to the combined signal vector $ x_t $ to obtain the filtered asset returns \( r_t^{\text{filtered}} \).
 
-Visualisations include:
+The filtered asset returns have a different covariance structure than the raw returns, as shown here:
 
-- Adjacency matrix heatmaps.
-- Covariance matrices before and after filtering.
-- NetworkX graph layouts of the knowledge graph.
+![](cov.png)
 
-## 8. Summary
 
-- **Input Data**: Asset returns (WRDS) and macro indicators (FRED, BLS)
-- **Knowledge Graph**: Block matrix $\mathcal{A}$ where only asset–macro links ($B_{am}$) are user-specified.
-- **Filtering**: Spectral filtering of $x_t$ via the Laplacian propagates macro influence to asset signals.
-- **Prediction**: Linear models on filtered vs. raw returns allow comparison of predictive performance.
-- **Flexibility**: PM can inject causal beliefs via sector- or asset-specific linkages.
 
-This approach enables a flexible, interpretable, and domain-informed integration of macroeconomic knowledge into asset return modelling.
+This is translated into the $B_{am}$ block of the adjacency matrix by assigning weights from the sector to macro variables. Asset-level linking is also possible, but this will be left for future work.
 
+## Results and Discussion
+| Setup                          | MSE             | Directional Accuracy |
+|--------------------------------|-----------------|----------------------|
+| Without KG, high-pass filter   | 121.36          | 49.86%               |
+| With KG, high-pass filter      | 103.33          | 52.48%               |
+| With KG, low-pass filter       | 36090.00        | 48.41%               |
+
+We use a high pass filter as we believe high-frequency components in the graph spectrum are more likely to capture idiosyncratic deviations– sharper, more responsive relationships between assets and macro signals. Since the PM’s specified asset–macro linkages are sparse and intentional (updated to react to market events), these relationships may express themselves more distinctly in the higher eigenmodes of the Laplacian. A high-pass filter will emphasise these features, which might be more informative for forecasting compared to the smoother patterns retained by low-pass filtering. We tested the GFT with a high-pass filter and found it to improve the model's predictive performance, while the low-pass filter worsened the results.
+
+## Future Work
+One natural extension is to allow the PM to specify asset–asset relationships as well. This would require a more care in constructing the full adjacency matrix – as KG adjacency matrix would overlap with the $A_{aa}$ block. However, this is a promising framework for allowing PMs to inject their views into a predictive model.
+
+
+[^1]: Wilson, A. G. and Ghahramani, Z. (n.d.) Modelling Input Varying Correlations between Multiple Responses. Unpublished working paper, University of Cambridge. Accessed 2025. https://mlg.eng.cam.ac.uk/pub/pdf/WilGha12a.pdf
