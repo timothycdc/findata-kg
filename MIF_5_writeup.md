@@ -264,19 +264,19 @@ So all securities in the Energy sector are linked to `IR_10Y_GOV` and `CPI` with
 
 This will give a knowledge graph as shown:
 
-![](img/kg.png)
+![Knowledge Graph visualisation of asset nodes connected to macroeconomic variables.](img/kg.png)
 
 A knowledge graph is convenient for a portfolio manager to link causal relationships between asset sectors and macroeconomic indicators. There exist many tools to build and visualise knowledge graphs, such as [Neo4j](https://neo4j.com/) and [WhyHow.AI](https://www.whyhow.ai/).
 
 The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the knowledge graph adjacency matrix $A$. These blocks, $\mathbf{B}_{am}$ and  $\mathbf{B}_{ma}$ assign weights from the sector to macro variables. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices, to form the full adjacency matrix $\mathcal{A}$.
 
-![](img/adj.png)
+![Plots of the KG Adjacency Matrix and the Full Adjacency Matrix.](img/adj.png)
 
 The full adjacent matrix is converted into a graph Laplacian, and the GFT is applied to the combined signal vector $\mathbf{x}_t$ to obtain the filtered asset returns $\mathbf{r}_t^{\text{filtered}}$.
 
 The filtered asset returns have a different covariance structure than the raw returns, as shown here:
 
-![](img/cov.png)
+![Covariance matrix of the data, before and after filtering.](img/cov.png)
 
 
 
@@ -312,7 +312,7 @@ Interestingly, the high-pass graph filter with KG brings performance gains for m
 Given the observed performance gains, it is reasonable to argue empirically that the graph-filtered returns yield more robust predictions due to this refinement effect, even in the absence of a fully specified causal model for all sectors.
 
 
-![](img/low_pass.png)
+![Performance of the low-pass filter](img/low_pass.png)
 
 Here, the low-pass filter blew up the MSE values in all sectors, making it an unsuitable choice for this problem. It is the high-frequency components of the graph spectrum that are more informative for forecasting in this problem.
 
