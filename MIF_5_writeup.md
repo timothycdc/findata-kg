@@ -291,9 +291,15 @@ Three instances of the model were tested for 276 months of data from 2001-01 to 
 | With KG, high-pass filter      | 103.33          | 52.48%               |
 | With KG, low-pass filter       | 36090.00        | 48.41%               |
 
-With the high-pass filter, the model with KG and high-pass filter achieves the benchmark directional accuracy above 50%. The high-pass filter with KG always outperformed the control for the window sizes $[15,20,25,30]$ for values of $\gamma$ between $0.02$ and $2.0$, with directional accuracy close to 51-52%. This illustrates the robustness of the model and the ease of tuning the parameters for performance.
+With the high-pass filter, the model with KG and high-pass filter achieves the benchmark directional accuracy above 50%. The high-pass filter with KG always outperformed the control for the window sizes $[15,20,25,30]$ and values of $\gamma$ between $0.02$ and $2.0$, with directional accuracy close to 51-52%. This illustrates the robustness of the model and the ease of tuning the parameters for performance.
 
-We use a high pass filter as we believe high-frequency components in the graph spectrum are more likely to capture idiosyncratic deviations– sharper, more responsive relationships between assets and macro signals. Since the PM’s specified asset–macro linkages are sparse and intentional (updated to react to market events), these relationships may express themselves more distinctly in the higher eigenmodes of the Laplacian. A high-pass filter will emphasise these features, which might be more informative for forecasting compared to the smoother patterns retained by low-pass filtering. We tested the GFT with a high-pass filter and found it to improve the model's predictive performance, while the low-pass filter worsened the results.
+Recall the definition of the high-pass filter:
+$$
+h(\lambda) = 1- \exp(-\gamma\, \lambda), \quad \gamma > 0
+$$
+
+
+We use a high-pass graph filter as we believe high-frequency components in the graph spectrum are more likely to capture idiosyncratic deviations– sharper, more responsive relationships between assets and macro signals. Since the PM’s specified asset–macro linkages are sparse and intentional (updated to react to market events), these relationships may express themselves more distinctly in the higher eigenmodes of the Laplacian. A high-pass filter will emphasise these features, which might be more informative for forecasting compared to the smoother patterns retained by low-pass filtering. We found that the high-pass filter and found it to improve the model's predictive performance, while the low-pass filter worsened the results.
 
 #### MSE across Sectors
 
@@ -301,7 +307,7 @@ We use a high pass filter as we believe high-frequency components in the graph s
 
 Here, we focus more on the Rolling (Original) and Rolling (High-pass) bars, highlighted in red and green. The high-pass filter with KG shows a performance improvement (less MSE) across the industrials and material sectors. It is interesting to note that the MSE increased for the energy sector, which implies that the initial beliefs of the Energy sector being highly sensitive to `IR_10Y_GOV` and `CPI` may not be correct. This is a good example of how the PM can use the model to test their beliefs and adjust them accordingly.
 
-Interestingly, the high-pass filter with KG brings performance gains for many other sectors, such as Consumer Discretionary, Consumer Information Technology, among others, **despite the KG not accounting for relationships in these sectors**. It can be posited that graph filtering process not only embeds structural knowledge (even partial or associative) but also stabilises the covariance estimates.
+Interestingly, the high-pass graph filter with KG brings performance gains for many other sectors, such as Consumer Discretionary, Consumer Information Technology, among others, **despite the KG not accounting for relationships in these sectors**. It can be posited that graph filtering process not only embeds structural knowledge (even partial or associative) but also stabilises the covariance estimates.
 
 Given the observed performance gains, it is reasonable to argue empirically that the graph-filtered returns yield more robust predictions due to this refinement effect, even in the absence of a fully specified causal model for all sectors.
 
@@ -316,7 +322,7 @@ One natural extension is to allow the PM to specify asset–asset and macro–ma
 > Geopolitical Risk Scenario: Oil Prices $\uparrow$, CPI $\uparrow$, Interest Rates $\uparrow$, Tech Sector Stocks $\downarrow$, but Palantir $\uparrow$
 
 
- This would require a more care in constructing the full adjacency matrix – as KG adjacency matrix would overlap with the $\mathbf{A}_{aa}$ and $\mathbf{A}_{mm}$ blocks. We can write a KG adjacency matrix that encapsulates all three types of relationships as:
+ This would require more caution in constructing the full adjacency matrix – as KG adjacency matrix would overlap with the $\mathbf{A}_{aa}$ and $\mathbf{A}_{mm}$ blocks. We can write a KG adjacency matrix that encapsulates all three types of relationships as:
 
 $$
 \mathbf{A} =
