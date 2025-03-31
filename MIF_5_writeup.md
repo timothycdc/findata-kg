@@ -66,9 +66,15 @@ where $\mathbf{B}_{ma} = \mathbf{B}_{am}^\top$.
 
 The upper right block and lower left blocks of $\mathbf{A}$ can be non-zero, which represent the relationships between asset returns and macroeconomic indicators, based on the stacked matrix $\mathbf{X}$. The PM specifies the weights in the knowledge graph.
 
+For example, if the PM believes the asset `HONEYWELL` is correlated (sensitive) to `CPI` with value $b$, this is equivalent constructing a simple knowledge graph with the triple `(HONEYWELL, CPI, b)`.
 
+```
+(HONEYWELL)----[b]----(CPI)
+```
 
-For example, if the PM believes the asset `Honeywell` is highly correlated (sensitive) to `CPI`, this can be encoded by a non-zero entry in $\mathbf{A}$, with a row index matching `Honeywell` and a column index matching `CPI`. Examples will be discussed in later sections.
+This can be encoded by a non-zero entry $b$ in $\mathbf{A}$ (specifically in the $\mathbf{B}_{am}$ block), with a row index matching `HONEYWELL` and a column index matching `CPI`, and another matching non-zero entry $b$ symmetrically placed in the $\mathbf{B}_{ma}$ block. 
+
+Examples will be discussed in later sections.
 
 
 
@@ -266,19 +272,27 @@ So all securities in the Energy sector are linked to `IR_10Y_GOV` and `CPI` with
 
 This will give a knowledge graph as shown:
 
-![Knowledge Graph visualisation of asset nodes connected to macroeconomic variables.](img/kg.png)
+![Knowledge Graph visualisation of asset nodes connected to macroeconomic variables.](img/kg.png){ width=65% }
+
+Example triples in the form `(Asset, Asset, Correlation)` could include: 
+
+- `(HONEYWELL, T10Y3M, 0.6)`
+- `(HESS CORPORATION, IR_10Y_GOV, 0.7)`
+- `(HESS CORPORATION, CPI, 0.5)`
+- `(AIR PRODUCTS & CHEMICALS, CPI, 0.3)`
+- ...
 
 A knowledge graph is convenient for a portfolio manager to link causal relationships between asset sectors and macroeconomic indicators. There exist many tools to build and visualise knowledge graphs, such as [Neo4j](https://neo4j.com/) and [WhyHow.AI](https://www.whyhow.ai/).
 
 The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the knowledge graph adjacency matrix $A$. These blocks, $\mathbf{B}_{am}$ and  $\mathbf{B}_{ma}$ assign weights from the assets to macro variables. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices, to form the full adjacency matrix $\mathcal{A}$.
 
-![Plots of the KG Adjacency Matrix and the Full Adjacency Matrix.](img/adj.png)
+![Plots of the KG Adjacency Matrix and the Full Adjacency Matrix.](img/adj.png){.center}
 
 The full adjacent matrix is converted into a graph Laplacian, and the GFT is applied to the combined signal vector $\mathbf{x}_t$ to obtain the filtered asset returns $\mathbf{r}_t^{\text{filtered}}$.
 
 The filtered asset returns have a different covariance structure than the raw returns, as shown here:
 
-![Covariance matrix of the data, before and after filtering.](img/cov.png)
+![Covariance matrix of the data, before and after filtering.](img/cov.png){.center}
 
 
 
@@ -322,6 +336,8 @@ Here, the low-pass filter blew up the MSE values in all sectors, making it an un
 One natural extension is to allow the PM to specify asset–asset and macro–macro relationships as well. This will then allow for more flexibility in modelling causal relationships. For a very fictional illustrative example: 
 
 > Geopolitical Risk Scenario: Oil Prices $\uparrow$, CPI $\uparrow$, Interest Rates $\uparrow$, Tech Sector Stocks $\downarrow$, but Palantir $\uparrow$
+
+Here, CPI and Interest rates are encoded with an macro-macro relationship, and asset-asset relationships are used to encode the relationship between Palantir and other tech stocks.
 
 
  This would require more caution in constructing the full adjacency matrix – as KG adjacency matrix would overlap with the $\mathbf{A}_{aa}$ and $\mathbf{A}_{mm}$ blocks. We can write a KG adjacency matrix that encapsulates all three types of relationships as:
