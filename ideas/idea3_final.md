@@ -253,6 +253,9 @@ The filtered asset returns have a different covariance structure than the raw re
 This is translated into the $B_{am}$ block of the adjacency matrix by assigning weights from the sector to macro variables. Asset-level linking is also possible, but this will be left for future work.
 
 ## Results and Discussion
+
+Three instances of the model were tested for 276 months of data from 2001-01 to 2023-12, with a rolling window of 25 months and $\gamma=0.7$. The results are shown below:
+
 | Setup                          | MSE             | Directional Accuracy |
 |--------------------------------|-----------------|----------------------|
 | Without KG, high-pass filter   | 121.36          | 49.86%               |
