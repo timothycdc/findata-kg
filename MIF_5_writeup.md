@@ -117,14 +117,14 @@ $$
 \mathcal{D}_{ii} = \sum_{j=1}^{N+M} \mathcal{A}_{ij}
 $$
 
-Then, the Laplacian is given by:
+Then, the Normalised Laplacian is given by:
 $$
-\mathcal{L} = \mathcal{D} - \mathcal{A}
+\mathcal{L}_{\text{norm}} = \mathcal{I} - \mathcal{D}^{-1/2} \mathcal{A} \mathcal{D}^{-1/2}
 $$
 
-Perform an eigen-decomposition of $\mathcal{L}$:
+Perform an eigen-decomposition of $\mathcal{L}_{\text{norm}}$:
 $$
-\mathcal{L} = \mathcal{U} \Lambda \mathcal{U}^\top
+\mathcal{L}_{\text{norm}} = \mathcal{U} \Lambda \mathcal{U}^\top
 $$
 where $\mathcal{U} \in \mathbb{R}^{(N+M)\times (N+M)}$ is an orthonormal matrix of eigenvectors and $\Lambda = \operatorname{diag}(\lambda_1,\ldots,\lambda_{N+M})$ contains the eigenvalues.
 
@@ -228,6 +228,8 @@ $$
 \mathbf{A} = \begin{bmatrix} 0 & 0 & b_1 \\ 0 & 0 & b_2 \\ b_1 & b_2 & 0 \end{bmatrix}
 $$
 
+Where $b_1 \in [-1,1]$ measures how much Asset 1 is influenced by the macro indicator $a_{mm}$, and $b_2 \in [-1,1]$ measures how much Asset 2 is influenced by the macro indicator $a_{mm}$. 
+
 Then the full adjacency matrix is:
 
 $$
@@ -242,11 +244,11 @@ $$
 From here, compute:
 
 - Degree matrix $\mathcal{D}$: sum over rows.
-- Laplacian $\mathcal{L} = \mathcal{D} - \mathcal{A}$.
-- Eigen-decomposition $\mathcal{L} = \mathcal{U}\Lambda\mathcal{U}^\top$.
+- Normalised Laplacian $\mathcal{L}_{\text{norm}} = \mathcal{I} - \mathcal{D}^{-1/2} \mathcal{A} \mathcal{D}^{-1/2}$.
+- Eigen-decomposition $\mathcal{L}_{\text{norm}} = \mathcal{U} \Lambda \mathcal{U}^\top$.
 - Stack $\mathbf{x}_t = (r_{1,t}, r_{2,t}, m_t)^\top$, apply GFT and filtering as before.
 
-Then extract $\mathbf{r}_t^{\text{filtered}}$ from the first two components.
+Then extract $\mathbf{r}_t^{\text{filtered}}$ from the first two components. The filtered signal is readily interpretable as a linear combination of the original signal, with the PM's beliefs encoded in the knowledge graph, which is then used to predict future returns.
 
 
 ## Testing the Model
@@ -268,7 +270,7 @@ This will give a knowledge graph as shown:
 
 A knowledge graph is convenient for a portfolio manager to link causal relationships between asset sectors and macroeconomic indicators. There exist many tools to build and visualise knowledge graphs, such as [Neo4j](https://neo4j.com/) and [WhyHow.AI](https://www.whyhow.ai/).
 
-The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the knowledge graph adjacency matrix $A$. These blocks, $\mathbf{B}_{am}$ and  $\mathbf{B}_{ma}$ assign weights from the sector to macro variables. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices, to form the full adjacency matrix $\mathcal{A}$.
+The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the knowledge graph adjacency matrix $A$. These blocks, $\mathbf{B}_{am}$ and  $\mathbf{B}_{ma}$ assign weights from the assets to macro variables. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices, to form the full adjacency matrix $\mathcal{A}$.
 
 ![Plots of the KG Adjacency Matrix and the Full Adjacency Matrix.](img/adj.png)
 
