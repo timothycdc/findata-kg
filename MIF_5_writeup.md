@@ -68,7 +68,7 @@ The upper right block and lower left blocks of $\mathbf{A}$ can be non-zero, whi
 
 
 
-For example, if the PM believes the asset `Honeywell` is highly correlated (sensitive) to `CPI`, this can be encoded by a non-zero entry in $\mathbf{B}_{am}$, with a row index matching `Honeywell` and a column index matching `CPI` Examples will be discussed in later sections.
+For example, if the PM believes the asset `Honeywell` is highly correlated (sensitive) to `CPI`, this can be encoded by a non-zero entry in $\mathbf{A}$, with a row index matching `Honeywell` and a column index matching `CPI`. Examples will be discussed in later sections.
 
 
 
