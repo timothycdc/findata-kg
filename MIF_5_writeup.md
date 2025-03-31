@@ -59,10 +59,11 @@ $$
 
 where:
 
-- $\mathbf{A}_{aa} \in \mathbb{R}^{N\times N}$: Asset–asset similarity matrix, computed as $\text{Corr}(\text{Asset Returns})$ or $\text{Corr}(\mathbf{R})$.
-- $\mathbf{A}_{mm} \in \mathbb{R}^{M\times M}$: Macro–macro similarity matrix, computed as $\text{Corr}(\text{Macro Variables})$ or $\text{Corr}(\mathbf{M})$.
-- $\mathbf{B}_{am} \in \mathbb{R}^{N\times M}$: **PM-specified asset–macro causal weights** (e.g. sector sensitivities).
-- $\mathbf{B}_{ma} = \mathbf{B}_{am}^\top$.
+
+ - $\mathbf{A}_{aa} \in \mathbb{R}^{N\times N}$: Asset–asset similarity matrix, computed as $\text{Corr}(\text{Asset Returns})$ or $\text{Corr}(\mathbf{R})$.
+ - $\mathbf{A}_{mm} \in \mathbb{R}^{M\times M}$: Macro–macro similarity matrix, computed as $\text{Corr}(\text{Macro Variables})$ or $\text{Corr}(\mathbf{M})$.
+ - $\mathbf{B}_{am} \in \mathbb{R}^{N\times M}$: **PM-specified asset–macro causal weights** (e.g. sector sensitivities).
+ - $\mathbf{B}_{ma} = \mathbf{B}_{am}^\top$.
 
 **Important**: Only $\mathbf{B}_{am}$ is directly specified by the PM. All other blocks are computed empirically.
 
@@ -145,8 +146,9 @@ The main idea is that $\mathbf{r}_t^{\text{filtered}}$ incorporates the effects 
 Let $\mathbf{r}_t \in \mathbb{R}^N$ denote the asset returns at time $t$, and let $\mathbf{r}_t^{\text{filtered}}\in \mathbb{R}^N$ be the filtered returns obtained via spectral filtering of the combined asset–macro signal $\mathbf{x}_t$. We model the one-step-ahead return as a VAR(1) linear autoregression model:
 
 $$
-\mathbf{r}_{t+1} = \boldsymbol{\alpha} + \boldsymbol{\beta}\, \mathbf{r}_t^{\text{filtered}} + \boldsymbol{\epsilon}_t,
+\mathbf{r}_{t+1} = \boldsymbol{\alpha} + \boldsymbol{\beta}\, \mathbf{r}_t^{\text{filtered}} + \boldsymbol{\epsilon}_t
 $$
+
 where:
 - $\mathbf{r}_t^{\text{filtered}}$ is the filtered signal,
 - $\boldsymbol{\alpha} \in \mathbb{R}^N$, $\boldsymbol{\beta} \in \mathbb{R}^{N \times N}$ are parameters fit via ordinary least squares,
@@ -265,7 +267,7 @@ We use a high pass filter as we believe high-frequency components in the graph s
 
 #### MSE across Sectors
 
-![MSE across Sectors](sec_results.png){.center}
+![MSE across Sectors](img/sec_results.png){.center}
 
 Here, we focus more on the Rolling (Original) and Rolling (High-pass) bars, highlighted in red and green. The high-pass filter with KG shows a performance improvement (less MSE) across the industrials and material sectors. It is interesting to note that the MSE increased for the energy sector, which implies that the initial beliefs of the Energy sector being highly sensitive to `IR_10Y_GOV` and `CPI` may not be correct. This is a good example of how the PM can use the model to test their beliefs and adjust them accordingly.
 
