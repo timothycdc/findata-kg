@@ -11,7 +11,7 @@ Graph Signal Processing has historically been used to employ background of signa
 ### Challenges in Finance
 Portfolio Managers (PMs), especially those in discretionary or macro buy-side roles often rely on predictive models using conventional, structured time-series data e.g. economic indicators, market prices, yield curves, etc. These models are not relied on solely for trading– at times, portfolio managers may wish to influence model predictions especially in times of sudden market events. 
 
-In a sudden market event, the correlations between the feature (input) variables will shift greatly. E.g., during a crisis or a panic sell-off, almost all securities will move together downwards. It may be helpful for PMs to have a mechanism to quickly integrate their views on causal relationships partially in such a way that is open for adjustment, as it is often the case that these causal changes are often intermittent.
+In a sudden market event, the correlations between the feature (input) variables will shift greatly. For example,, during a crisis or a panic sell-off, almost all securities will move together downwards, or the returns of certain securities become very sensitive to certain macroeconomic variables like interest rates. It may be helpful for PMs to have a mechanism to quickly integrate their views on causal relationships partially in such a way that is open for adjustment, as it is often the case that these causal changes are often intermittent.
 
 Modelling covariances between multiple responses is often an uncharted problem in finance, especially when in most modelling cases, the correlations between features are assumed to be constant. [^1].
 
@@ -19,7 +19,7 @@ Modelling covariances between multiple responses is often an uncharted problem i
 
 Let $\mathbf{r}_t \in \mathbb{R}^N$ denote the vector of asset returns at time $t$ (for $N$ assets), and $\mathbf{m}_t \in \mathbb{R}^M$ denote a vector of macroeconomic indicators (for $M$ indicators). Our goal is to predict next-period asset returns $\mathbf{r}_{t+1}$ by incorporating both historical asset data and macroeconomic variables, while allowing the portfolio manager (PM) to inject domain knowledge into the model.
 
-Crucially, we encode this domain knowledge in the form of a **heterogeneous knowledge graph** (KG), in which only **asset–macro** relationships (and not asset–asset or macro–macro) are specified by the PM. These views reflect the PM's beliefs about how sensitive certain asset sectors are to macroeconomic changes. We use the knowledge graph to construct a block adjacency matrix, which is then used to filter the asset returns via **Graph Fourier Transform (GFT)**. The filtered asset returns are then used to predict future returns.
+Crucially, we encode this domain knowledge in the form of a **heterogeneous knowledge graph** (KG). To simplify the problem, we only consider the class of **asset–macro** relationships (and not asset–asset or macro–macro) views as specified by the PM. These views reflect the PM's beliefs about how sensitive certain asset sectors are to macroeconomic indicators. We use the knowledge graph to construct a block adjacency matrix, which is then used to filter the asset returns via **Graph Fourier Transform (GFT)**. The filtered asset returns are then used to predict future returns, with improved performance. Subsequently, we discuss how we can extend our findings to (asset-asset) and (macro-macro) relationships as well.
 
 ## Methodology
 To emulate a real-world scenario in a simple form, we apply the use of knowledge graphs to a dataset of US equities' returns and macroeconomic indicators, to predict future returns. 
@@ -45,7 +45,34 @@ We represent the data as $\mathbf{M} \in \mathbb{R}^{M \times T}$, where $M=8$ i
 
   Monthly stock-level return data sourced from WRDS/Compustat, accompanied with sector data (e.g. Energy, Materials). Since we are regressing against returns, we have $\mathbf{R} \in \mathbb{R}^{N \times T}$, where $N=127$ is the number of assets and $T=276$ is the number of time periods.
 
+### Stacking Asset Returns and Macroeconomic Indicators
+We stack the matrices for asset returns and macroeconomic indicators into a single block matrix:
+
+$$
+\mathbf{X} = \begin{bmatrix} \mathbf{R} \\ \mathbf{M} \end{bmatrix} \in \mathbb{R}^{(N+M) \times T}
+$$
+
 ## Knowledge Graph Construction
+We construct a knowledge graph to represent the PM's beliefs about the relationships between asset sectors and macroeconomic indicators. This can be viewed as the matrix $\mathbf{A} \in \mathbb{R}^{(N+M) \times (N+M)}$:
+
+$$
+\mathbf{A} =
+\begin{bmatrix}
+\mathbf{0} & \mathbf{B}_{am} \\
+\mathbf{B}_{ma} & \mathbf{0}
+\end{bmatrix}
+$$
+where $\mathbf{B}_{ma} = \mathbf{B}_{am}^\top$.
+
+The upper right block and lower left blocks of $\mathbf{A}$ can be non-zero, which represent the relationships between asset returns and macroeconomic indicators, based on the stacked matrix $\mathbf{X}$. The PM specifies the weights in the knowledge graph.
+
+
+
+For example, if the PM believes the asset `Honeywell` is highly correlated (sensitive) to `CPI`, this can be encoded by a non-zero entry in $\mathbf{B}_{am}$, with a row index matching `Honeywell` and a column index matching `CPI` Examples will be discussed in later sections.
+
+
+
+## Block Adjacency Matrix
 
 We build a block adjacency matrix $\mathcal{A} \in \mathbb{R}^{(N+M) \times (N+M)}$ to represent a graph which consists of correlation matrices augmented with the knowledge graph:
 
@@ -54,6 +81,10 @@ $$
 \begin{bmatrix}
 \mathbf{A}_{aa} & \mathbf{B}_{am} \\
 \mathbf{B}_{ma} & \mathbf{A}_{mm}
+\end{bmatrix} = 
+\begin{bmatrix}
+\text{Corr}(\mathbf{R}) & \mathbf{B}_{am} \\
+\mathbf{B}_{ma} & \text{Corr}(\mathbf{M})
 \end{bmatrix}
 $$
 
@@ -63,15 +94,12 @@ where:
  - $\mathbf{A}_{aa} \in \mathbb{R}^{N\times N}$: Asset–asset similarity matrix, computed as $\text{Corr}(\text{Asset Returns})$ or $\text{Corr}(\mathbf{R})$.
  - $\mathbf{A}_{mm} \in \mathbb{R}^{M\times M}$: Macro–macro similarity matrix, computed as $\text{Corr}(\text{Macro Variables})$ or $\text{Corr}(\mathbf{M})$.
  - $\mathbf{B}_{am} \in \mathbb{R}^{N\times M}$: **PM-specified asset–macro causal weights** (e.g. sector sensitivities).
- - $\mathbf{B}_{ma} = \mathbf{B}_{am}^\top$.
-
-**Important**: Only $\mathbf{B}_{am}$ is directly specified by the PM. All other blocks are computed empirically.
-
-For example, if the PM believes the Energy sector is highly sensitive to long-term interest rates and CPI, this is encoded by non-zero entries in $\mathbf{B}_{am}$ linking Energy stocks to `IR_10Y_GOV` and `CPI`.
 
 
+The elements of $\mathbf{B}_{am}$ (strength of the asset–macro relationships) range betwen $[-1, 1]$, in order to follow the scale of the correlation matrices.
 
-This is then embedded within the full adjacency matrix $\mathcal{A}$, which includes empirical asset–asset and macro–macro blocks to complete the Laplacian construction.
+
+**Important**: Only $\mathbf{B}_{am}$ is directly specified by the PM. All other blocks are computed empirically. 
 
 ### Combined Signal Vector
 
@@ -286,7 +314,53 @@ One natural extension is to allow the PM to specify asset–asset and macro–ma
 > Geopolitical Risk Scenario: Oil Prices $\uparrow$, CPI $\uparrow$, Interest Rates $\uparrow$, Tech Sector Stocks $\downarrow$, but Palantir $\uparrow$
 
 
- This would require a more care in constructing the full adjacency matrix – as KG adjacency matrix would overlap with the $\mathbf{A}_{aa}$ and $\mathbf{A}_{mm}$ blocks. However, this is a promising framework for allowing PMs to inject their views into a predictive model.
+ This would require a more care in constructing the full adjacency matrix – as KG adjacency matrix would overlap with the $\mathbf{A}_{aa}$ and $\mathbf{A}_{mm}$ blocks. We can write a KG adjacency matrix that encapsulates all three types of relationships as:
+
+$$
+\mathbf{A} =
+\begin{bmatrix}
+\mathbf{B}_{aa} & \mathbf{B}_{am} \\
+\mathbf{B}_{ma} & \mathbf{B}_{mm}
+\end{bmatrix}
+$$
+
+However, our naive adjacency matrix $\mathcal{A}$ would look like:
+
+
+$$
+\mathcal{A} =
+\begin{bmatrix}
+\mathbf{A}_{aa}+\mathbf{B}_{aa} & \mathbf{B}_{am} \\
+\mathbf{B}_{ma} & \mathbf{A}_{mm}+\mathbf{B}_{aa}
+\end{bmatrix} = 
+\begin{bmatrix}
+\text{Corr}(\mathbf{R})+\mathbf{B}_{aa} & \mathbf{B}_{am} \\
+\mathbf{B}_{ma} & \text{Corr}(\mathbf{M})+\mathbf{B}_{mm}
+\end{bmatrix}
+$$
+
+The scale of the correlation matrices will have increased, with a risk of instability. To address this, it is possible one could take inspiration from Ledoit and Wolf's (2004) [^2] shrinkage estimator for the sample covariance matrix, by scaling the top left and bottom right blocks of the adjacency matrix as such:
+
+$$
+\begin{aligned}
+\mathcal{A} &=
+\begin{bmatrix}
+\kappa \mathbf{A}_{aa} + (1-\kappa) \mathbf{B}_{aa} & \mathbf{B}_{am} \\
+\mathbf{B}_{ma} & \zeta \mathbf{A}_{mm} + (1-\zeta) \mathbf{B}_{mm}
+\end{bmatrix}\\
+&=
+\begin{bmatrix}
+\kappa \text{Corr}(\mathbf{R}) + (1-\kappa) \mathbf{B}_{aa} & \mathbf{B}_{am} \\
+\mathbf{B}_{ma} & \zeta \text{Corr}(\mathbf{M}) + (1-\zeta) \mathbf{B}_{mm}
+\end{bmatrix}
+\end{aligned}
+$$
+
+where $\kappa, \zeta \in [0, 1]$ are parameters to be adjusted that control the influence of the KG on the covariance structure. Due to time constraints, we leave this exploration for future work.
+ 
+However, our existing results provide a promising framework for allowing PMs to inject discretionary views into a predictive model as part of their investment process.
 
 
 [^1]: Wilson, A. G. and Ghahramani, Z. (n.d.) Modelling Input Varying Correlations between Multiple Responses. Unpublished working paper, University of Cambridge. Accessed 2025. https://mlg.eng.cam.ac.uk/pub/pdf/WilGha12a.pdf
+
+[^2]: Ledoit, O. and Wolf, M. (2020). *The Power of (Non-)Linear Shrinking: A Review and Guide to Covariance Matrix Estimation*. Journal of Financial Econometrics, 18(1), 1–32. https://doi.org/10.1093/jjfinec/nbaa007
