@@ -287,9 +287,11 @@ Three instances of the model were tested for 276 months of data from 2001-01 to 
 
 | Setup                          | MSE             | Directional Accuracy |
 |--------------------------------|-----------------|----------------------|
-| Without KG, high-pass filter   | 121.36          | 49.86%               |
+| Without KG (control)           | 121.36          | 49.86%               |
 | With KG, high-pass filter      | 103.33          | 52.48%               |
 | With KG, low-pass filter       | 36090.00        | 48.41%               |
+
+With the high-pass filter, the model with KG and high-pass filter achieves the benchmark directional accuracy above 50%. The high-pass filter with KG always outperformed the control for the window sizes $[15,20,25,30]$ for values of $\gamma$ between $0.02$ and $2.0$, with directional accuracy close to 51-52%. This illustrates the robustness of the model and the ease of tuning the parameters for performance.
 
 We use a high pass filter as we believe high-frequency components in the graph spectrum are more likely to capture idiosyncratic deviations– sharper, more responsive relationships between assets and macro signals. Since the PM’s specified asset–macro linkages are sparse and intentional (updated to react to market events), these relationships may express themselves more distinctly in the higher eigenmodes of the Laplacian. A high-pass filter will emphasise these features, which might be more informative for forecasting compared to the smoother patterns retained by low-pass filtering. We tested the GFT with a high-pass filter and found it to improve the model's predictive performance, while the low-pass filter worsened the results.
 
