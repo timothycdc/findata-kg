@@ -238,7 +238,7 @@ This will give a knowledge graph as shown:
 
 A knowledge graph is convenient for a portfolio manager to link causal relationships between asset sectors and macroeconomic indicators. There exist many tools to build and visualise knowledge graphs, such as [Neo4j](https://neo4j.com/) and [WhyHow.AI](https://www.whyhow.ai/).
 
-The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the adjacency matrix. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices.
+The knowledge graph only has asset–macro relationships, and will occupy the upper right and bottom left blocks of the knowledge graph adjacency matrix $A$. These blocks, $\mathbf{B}_{am}$ and  $\mathbf{B}_{ma}$ assign weights from the sector to macro variables. This will then be augmented with the empirical asset–asset and macro–macro correlation matrices, to form the full adjacency matrix $\mathcal{A}$.
 
 ![](adj.png)
 
@@ -249,7 +249,7 @@ The filtered asset returns have a different covariance structure than the raw re
 ![](cov.png)
 
 
-This is translated into the $\mathbf{B}_{am}$ block of the adjacency matrix by assigning weights from the sector to macro variables. 
+
 
 ## Results and Discussion
 
