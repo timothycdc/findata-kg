@@ -1,4 +1,4 @@
-# Modelling Correlated Discretionary Views within Knowledge Graphs for Return Prediction
+# Modelling Discretionary Views within Knowledge Graphs for Return Prediction
 
 *Timothy Chung, Anthony Bolton*
 
