@@ -299,7 +299,7 @@ h(\lambda) = 1- \exp(-\gamma\, \lambda), \quad \gamma > 0
 $$
 
 
-We use a high-pass graph filter as we believe high-frequency components in the graph spectrum are more likely to capture idiosyncratic deviations– sharper, more responsive relationships between assets and macro signals. Since the PM’s specified asset–macro linkages are sparse and intentional (updated to react to market events), these relationships may express themselves more distinctly in the higher eigenmodes of the Laplacian. A high-pass filter will emphasise these features, which might be more informative for forecasting compared to the smoother patterns retained by low-pass filtering. We found that the high-pass filter and found it to improve the model's predictive performance, while the low-pass filter worsened the results.
+We use a high-pass graph filter as we believe high-frequency components in the graph spectrum are more likely to capture idiosyncratic deviations– sharper, more responsive relationships between assets and macro signals. Since the PM’s specified asset–macro linkages are sparse and intentional (updated to react to market events), these relationships may express themselves more distinctly in the higher eigenmodes of the Laplacian. A high-pass filter will emphasise these features, which might be more informative for forecasting compared to the smoother patterns retained by low-pass filtering. We found that the high-pass filter improved the model's predictive performance, while the low-pass filter worsened the results.
 
 #### MSE across Sectors
 
