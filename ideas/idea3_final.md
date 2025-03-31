@@ -263,7 +263,12 @@ This is translated into the $B_{am}$ block of the adjacency matrix by assigning 
 We use a high pass filter as we believe high-frequency components in the graph spectrum are more likely to capture idiosyncratic deviations– sharper, more responsive relationships between assets and macro signals. Since the PM’s specified asset–macro linkages are sparse and intentional (updated to react to market events), these relationships may express themselves more distinctly in the higher eigenmodes of the Laplacian. A high-pass filter will emphasise these features, which might be more informative for forecasting compared to the smoother patterns retained by low-pass filtering. We tested the GFT with a high-pass filter and found it to improve the model's predictive performance, while the low-pass filter worsened the results.
 
 ## Future Work
-One natural extension is to allow the PM to specify asset–asset relationships as well. This would require a more care in constructing the full adjacency matrix – as KG adjacency matrix would overlap with the $A_{aa}$ block. However, this is a promising framework for allowing PMs to inject their views into a predictive model.
+One natural extension is to allow the PM to specify asset–asset and macro–macro relationships as well. This will then allow for more flexibility in modelling causal relationships. For a very fictional illustrative example: 
+
+> Geopolitical Risk Scenario: Oil Prices $\uparrow$, CPI $\uparrow$, Interest Rates $\uparrow$, Tech Sector Stocks $\downarrow$, but Palantir $\uparrow$
+
+
+ This would require a more care in constructing the full adjacency matrix – as KG adjacency matrix would overlap with the $A_{aa}$ and $A_{mm}$ blocks. However, this is a promising framework for allowing PMs to inject their views into a predictive model.
 
 
 [^1]: Wilson, A. G. and Ghahramani, Z. (n.d.) Modelling Input Varying Correlations between Multiple Responses. Unpublished working paper, University of Cambridge. Accessed 2025. https://mlg.eng.cam.ac.uk/pub/pdf/WilGha12a.pdf
