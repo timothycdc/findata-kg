@@ -299,15 +299,15 @@ The filtered asset returns have a different covariance structure than the raw re
 
 ## Results and Discussion
 
-Three instances of the model were tested for 276 months of data from 2001-01 to 2023-12, with a rolling window of 25 months and $\gamma=0.7$. The results are shown below:
+Three instances of the model were tested for 276 months of data from 2001-01 to 2023-12, with a rolling window of 25 months and $\gamma=0.01$. The results are shown below:
 
 | Setup                          | MSE             | Directional Accuracy |
 |--------------------------------|-----------------|----------------------|
 | Without KG (control)           | 121.36          | 49.86%               |
-| With KG, high-pass filter      | 103.33          | 52.48%               |
+| With KG, high-pass filter      | 103.20          | 52.64%               |
 | With KG, low-pass filter       | 36090.00        | 48.41%               |
 
-With the high-pass filter, the model with KG and high-pass filter achieves the benchmark directional accuracy above 50%. The high-pass filter with KG always outperformed the control for the window sizes $[15,20,25,30]$ and values of $\gamma$ between $0.02$ and $2.0$, with directional accuracy close to 51-52%. This illustrates the robustness of the model and the ease of tuning the parameters for performance.
+With the high-pass filter, the model with KG and high-pass filter achieves the benchmark directional accuracy above 50%. The high-pass filter with KG always outperformed the control for the window sizes $[15,20,25,30]$ and values of $\gamma$ between $0.01$ and $2.0$, with directional accuracy close to around 51-52.5%. This illustrates the robustness of the model and the ease of tuning the parameters for performance.
 
 Recall the definition of the high-pass filter:
 $$
@@ -386,6 +386,11 @@ where $\kappa, \zeta \in [0, 1]$ are parameters to be adjusted that control the 
  
 However, our existing results provide a promising framework for allowing PMs to inject discretionary views into a predictive model as part of their investment process.
 
+
+---
+
+
+*Due to the use of external files in the code, the notebook alone is not reproducible when submitted to BlackBoard. All the code and data can be found at the [findata-kg repository](https://github.com/timothycdc/findata-kg/) [https://github.com/timothycdc/findata-kg/](https://github.com/timothycdc/findata-kg/).*
 
 [^1]: Wilson, A. G. and Ghahramani, Z. (n.d.) Modelling Input Varying Correlations between Multiple Responses. Unpublished working paper, University of Cambridge. Accessed 2025. https://mlg.eng.cam.ac.uk/pub/pdf/WilGha12a.pdf
 
